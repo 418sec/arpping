@@ -1,7 +1,7 @@
 'use strict';
 
 const os = require('os');
-const { exec } = require('child_process');
+const { execFile } = require('child_process');
 
 const macLookup = require('./macLookup.js');
 
@@ -57,7 +57,7 @@ Arpping.prototype._getFullRange = function(ip) {
 */
 Arpping.prototype.findMyInfo = function() {
     return new Promise((resolve, reject) => {
-        exec(ipCommand, (err, stdout, stderr) => {
+        execFile(ipCommand, (err, stdout, stderr) => {
             if (err) return reject(err);
 
             var output = null;
@@ -117,7 +117,7 @@ Arpping.prototype.ping = function(range) {
             missing =[],
             checked = 0;
         range.forEach(ip => {
-            exec(`ping ${flag} ${this.timeout} ${ip}`, (err, stdout, stderr) => {
+            execFile('ping', [flag, this.timeout, ip], (err, stdout, stderr) => {
                 checked++;
                 if (err || stdout.indexOf('100% packet loss') > -1) missing.push(ip);
                 else hosts.push(ip);
@@ -142,7 +142,7 @@ Arpping.prototype.arp = function(range) {
             missing = [],
             checked = 0;
         range.forEach(ip => {
-            exec(`arp ${ip}`, (err, stdout, stderr) => {
+            execFile('arp', [ip], (err, stdout, stderr) => {
                 checked++;
                 if (err || stdout.indexOf('no entry') > -1) missing.push(ip);
                 else {
